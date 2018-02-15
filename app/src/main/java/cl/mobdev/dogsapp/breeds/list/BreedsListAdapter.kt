@@ -8,19 +8,26 @@ import android.widget.TextView
 import cl.mobdev.dogsapp.BaseAdapter
 import cl.mobdev.dogsapp.R
 import cl.mobdev.dogsapp.domain.breeds.list.model.Breed
+import javax.inject.Inject
 
 /**
  * Created by guillermo.mazzola on 15/02/2018.
  */
-class BreedsListAdapter(items: List<Breed>) : BaseAdapter<Breed, BreedsListAdapter.Holder>(items) {
+class BreedsListAdapter @Inject constructor() : BaseAdapter<Breed, BreedsListAdapter.Holder>() {
+
+    var listener: ((Breed) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int) = Holder(LayoutInflater.from(parent?.context)
             .inflate(R.layout.fragment_breeds_list_item, parent, false))
 
     override fun onBindViewHolder(holder: Holder?, position: Int) {
         with(holder!!) {
-            item = items[position]
+            item = getItem(position)
             name.text = item.name
+
+            itemView.setOnClickListener {
+                listener?.invoke(item)
+            }
         }
     }
 

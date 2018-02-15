@@ -17,6 +17,7 @@ class BreedsListPresenter @Inject constructor(private val useCase: Provider<List
 
     override fun bindView(view: BreedsListContract.View) {
         mView = view
+
         performLoad()
     }
 
@@ -26,6 +27,7 @@ class BreedsListPresenter @Inject constructor(private val useCase: Provider<List
 
     override fun reloadItems() {
         mRequest = createRequest()
+
         performLoad()
     }
 

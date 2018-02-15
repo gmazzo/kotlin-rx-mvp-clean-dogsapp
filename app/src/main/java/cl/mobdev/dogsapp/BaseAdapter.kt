@@ -6,14 +6,18 @@ import android.support.v7.widget.RecyclerView
  * Created by guillermo.mazzola on 15/02/2018.
  */
 
-abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>(items: List<T>) : RecyclerView.Adapter<VH>() {
+abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>(items: List<T>?) : RecyclerView.Adapter<VH>() {
 
-    var items: List<T> = items
+    constructor() : this(null)
+
+    var items: List<T>? = items
         set(value) {
             field = value
             notifyDataSetChanged()
         }
 
-    override fun getItemCount() = items.size
+    override fun getItemCount() = items?.size ?: 0
+
+    fun getItem(position: Int) = items!![position]
 
 }

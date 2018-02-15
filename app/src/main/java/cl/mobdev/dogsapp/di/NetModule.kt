@@ -1,6 +1,9 @@
 package cl.mobdev.dogsapp.di
 
+import android.content.Context
 import cl.mobdev.dogsapp.BuildConfig
+import com.jakewharton.picasso.OkHttp3Downloader
+import com.squareup.picasso.Picasso
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
@@ -36,6 +39,12 @@ class NetModule {
             .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl("https://dog.ceo/api/")
+            .build()
+
+    @Provides
+    @Reusable
+    fun providePicasso(context: Context, client: OkHttpClient) = Picasso.Builder(context)
+            .downloader(OkHttp3Downloader(client))
             .build()
 
 }
