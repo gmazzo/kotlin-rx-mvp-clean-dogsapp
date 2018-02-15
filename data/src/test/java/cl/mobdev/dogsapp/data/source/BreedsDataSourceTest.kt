@@ -3,79 +3,78 @@ package cl.mobdev.dogsapp.data.source
 import cl.mobdev.dogsapp.data.Breed
 import cl.mobdev.dogsapp.data.BuildConfig
 import cl.mobdev.dogsapp.data.Image
-import cl.mobdev.dogsapp.data.source.BreedsAPI.Companion.STATUS_SUCCESS
-import io.reactivex.Single
+import okhttp3.OkHttpClient
+import okhttp3.mock.ClasspathResources.resource
+import okhttp3.mock.MockInterceptor
+import okhttp3.mock.Rule
 import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.verify
-import org.mockito.junit.MockitoJUnit
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import java.net.URL
 
-internal fun <T> T.asResponse() = Single.just(BreedsAPI.Response(STATUS_SUCCESS, this))
 internal fun String.breed() = Breed(this)
+internal fun String.image() = Image(URL(this))
 
 /**
  * Created by guillermo.mazzola on 14/02/2018.
  */
+
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class)
 class BreedsDataSourceTest {
-
-    @get:Rule
-    val mockitoRule = MockitoJUnit.rule()
-
+    private val interceptor = MockInterceptor()
     private lateinit var source: BreedsDataSource
-
-    @Mock
-    private lateinit var api: BreedsAPI
 
     @Before
     fun setup() {
-        source = BreedsDataSource(api)
+        interceptor.reset()
+
+        source = BreedsDataSource(Retrofit.Builder()
+                .client(OkHttpClient.Builder()
+                        .addInterceptor(interceptor)
+                        .build())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl("http://dummyserver/api/")
+                .build())
     }
 
     @Test
     fun testListAll() {
-        `when`(api.listAll()).thenReturn(
-                mapOf("kaniche" to listOf("toy", "minitoy"), "sharpei" to listOf(), "doberman" to listOf()).asResponse())
+        interceptor.addRule(Rule.Builder()
+                .path("/api/breeds/list")
+                .respond(resource("breeds_list.json")))
 
         val values = source.listAll().toList().blockingGet()
 
-        assertEquals(listOf("kaniche".breed(), "sharpei".breed(), "doberman".breed()), values)
-        verify(api).listAll()
+        assertEquals(80, values.size)
+        assertEquals(listOf(
+                "affenpinscher",
+                "african",
+                "airedale").map { it.breed() },
+                values.subList(0, 3))
     }
 
     @Test
-    fun testListImages1() {
-        testListImages("kaniche", "kaniche1", "kaniche2", "kaniche3")
-    }
+    fun testListImages() {
+        interceptor.addRule(Rule.Builder()
+                .path("/api/breed/hound/images")
+                .respond(resource("breed_hound_images.json")))
 
-    @Test
-    fun testListImages2() {
-        testListImages("sharpei", "sharpei1")
-    }
+        val values = source.listImages("hound").toList().blockingGet()
 
-    @Test
-    fun testListImagesNoImages() {
-        testListImages("doberman")
-    }
-
-    private fun testListImages(name: String, vararg images: String) {
-        val urls = images.map { URL("http://dummyserver/static/$it.jpg") }.toList()
-
-        `when`(api.listImages(name)).thenReturn(urls.asResponse())
-
-        val values = source.listImages(name).toList().blockingGet()
-
-        assertEquals(urls.map { Image(it) }, values)
-        verify(api).listImages(name)
+        assertEquals(1099, values.size)
+        assertEquals(listOf(
+                "https://dog.ceo/api/img/hound-Ibizan/n02091244_100.jpg",
+                "https://dog.ceo/api/img/hound-Ibizan/n02091244_1000.jpg",
+                "https://dog.ceo/api/img/hound-Ibizan/n02091244_1025.jpg").map { it.image() },
+                values.subList(0, 3))
     }
 
 }

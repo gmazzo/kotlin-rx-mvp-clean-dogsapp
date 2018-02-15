@@ -1,8 +1,11 @@
 package cl.mobdev.dogsapp.di
 
+import cl.mobdev.dogsapp.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -16,12 +19,23 @@ class NetModule {
 
     @Provides
     @Reusable
-    fun provideRetrofit(): Retrofit {
-        return Retrofit.Builder()
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
-                .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl("https://dog.ceo/api/")
-                .build()
+    fun provideOkHttpClient(): OkHttpClient {
+        val builder = OkHttpClient.Builder()
+        if (BuildConfig.DEBUG) {
+            val interceptor = HttpLoggingInterceptor()
+            interceptor.level = HttpLoggingInterceptor.Level.BODY
+            builder.addInterceptor(interceptor)
+        }
+        return builder.build()
     }
+
+    @Provides
+    @Reusable
+    fun provideRetrofit(client: OkHttpClient) = Retrofit.Builder()
+            .client(client)
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl("https://dog.ceo/api/")
+            .build()
 
 }

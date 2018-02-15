@@ -9,14 +9,11 @@ import javax.inject.Inject
 /**
  * Created by guillermo.mazzola on 14/02/2018.
  */
-class BreedsDataSource internal constructor(val api: BreedsAPI) : BreedsRepository {
-
-    @Inject
-    constructor(retrofit: Retrofit) : this(retrofit.create(BreedsAPI::class.java))
+class BreedsDataSource @Inject constructor(retrofit: Retrofit) : BreedsRepository {
+    private val api = retrofit.create(BreedsAPI::class.java)
 
     override fun listAll(): Observable<Breed> = api.listAll()
-            .map { it.get() }
-            .flatMapObservable { Observable.fromIterable(it.keys) }
+            .flatMapObservable { Observable.fromIterable(it.get()) }
             .map { Breed(it) }
 
     override fun listImages(breedName: String): Observable<Image> = api.listImages(breedName)

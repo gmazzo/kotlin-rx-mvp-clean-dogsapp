@@ -13,7 +13,7 @@ import java.net.URL
 internal interface BreedsAPI {
 
     @GET("breeds/list")
-    fun listAll(): Single<Response<Map<String, List<String>>>>
+    fun listAll(): Single<Response<List<String>>>
 
     @GET("breed/{breed}/images")
     fun listImages(@Path("breed") name: String): Single<Response<List<URL>>>
