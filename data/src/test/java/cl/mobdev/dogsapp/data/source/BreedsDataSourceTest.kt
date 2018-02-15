@@ -1,18 +1,19 @@
 package cl.mobdev.dogsapp.data.source
 
-import cl.mobdev.dogsapp.BaseRobolectricTest
-import cl.mobdev.dogsapp.BuildConfig
 import cl.mobdev.dogsapp.data.Breed
+import cl.mobdev.dogsapp.data.BuildConfig
 import cl.mobdev.dogsapp.data.Image
 import cl.mobdev.dogsapp.data.source.BreedsAPI.Companion.STATUS_SUCCESS
 import io.reactivex.Single
 import org.junit.Assert.assertEquals
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
+import org.mockito.junit.MockitoJUnit
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.net.URL
@@ -25,7 +26,11 @@ internal fun String.breed() = Breed(this)
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class)
-class BreedsDataSourceTest : BaseRobolectricTest() {
+class BreedsDataSourceTest {
+
+    @get:Rule
+    val mockitoRule = MockitoJUnit.rule()
+
     private lateinit var source: BreedsDataSource
 
     @Mock

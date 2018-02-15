@@ -1,6 +1,6 @@
 package cl.mobdev.dogsapp.di
 
-import cl.mobdev.dogsapp.DogApplication
+import cl.mobdev.dogsapp.DogsApplication
 import dagger.Component
 import dagger.android.AndroidInjector
 import javax.inject.Singleton
@@ -11,9 +11,9 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(modules = [AppModule::class])
-interface Injector : AndroidInjector<DogApplication> {
+interface Injector : AndroidInjector<DogsApplication> {
 
     @Component.Builder
-    abstract class Builder : AndroidInjector.Builder<DogApplication>()
+    abstract class Builder : AndroidInjector.Builder<DogsApplication>()
 
 }

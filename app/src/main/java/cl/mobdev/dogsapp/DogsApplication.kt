@@ -8,7 +8,7 @@ import dagger.android.support.DaggerApplication
  * Created by guillermo.mazzola on 14/02/2018.
  */
 
-class DogApplication : DaggerApplication() {
+class DogsApplication : DaggerApplication() {
 
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
         return DaggerInjector.builder().create(this)
