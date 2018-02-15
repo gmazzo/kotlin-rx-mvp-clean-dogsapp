@@ -1,6 +1,8 @@
 package cl.mobdev.dogsapp.di
 
-import android.support.v4.app.Fragment
+import cl.mobdev.dogsapp.MainActivity
+import cl.mobdev.dogsapp.breeds.list.BreedsListFragment
+import cl.mobdev.dogsapp.breeds.list.BreedsListModule
 import dagger.Module
 import dagger.android.AndroidInjectionModule
 import dagger.android.ContributesAndroidInjector
@@ -11,8 +13,10 @@ import dagger.android.ContributesAndroidInjector
 @Module(includes = [AndroidInjectionModule::class, NetModule::class])
 interface AppModule {
 
-    // TODO delete this
     @ContributesAndroidInjector
-    fun dummyFragment(): Fragment
+    fun mainActivity(): MainActivity
+
+    @ContributesAndroidInjector(modules = [BreedsListModule::class])
+    fun breedsListFragment(): BreedsListFragment
 
 }
