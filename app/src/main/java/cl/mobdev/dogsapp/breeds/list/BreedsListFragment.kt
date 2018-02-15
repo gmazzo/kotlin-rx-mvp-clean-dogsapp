@@ -34,6 +34,7 @@ class BreedsListFragment : DaggerFragment(), BreedsListContract.View {
     override fun onStart() {
         super.onStart()
 
+        refresh.isRefreshing = true
         mPresenter.bindView(this)
     }
 
@@ -45,6 +46,7 @@ class BreedsListFragment : DaggerFragment(), BreedsListContract.View {
 
     override fun displayItems(items: List<Breed>) {
         recycler.adapter = BreedsListAdapter(items)
+        refresh.isRefreshing = false
     }
 
     companion object {

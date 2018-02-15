@@ -13,6 +13,8 @@ import javax.inject.Inject
 
 class ListBreedImagesUseCase @Inject constructor(private val repository: BreedsRepository) : UseCase<ListBreedImagesUseCase.Request, Observable<Image>>() {
 
+    fun execute(breedName: String) = execute(Request(breedName))
+
     override fun execute(request: Request) = repository.listImages(request.breedName)
             .map { Image(it.url) }
             .subscribeOn(Schedulers.io())
