@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.os.bundleOf
 import cl.mobdev.dogsapp.R
 import cl.mobdev.dogsapp.domain.breeds.images.model.Image
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_breed_images_list.*
+import withArgs
 import javax.inject.Inject
 
 /**
@@ -55,14 +57,8 @@ class BreedImagesListFragment : DaggerFragment(), BreedImagesListContract.View {
 
     companion object {
 
-        fun create(breedName: String): BreedImagesListFragment {
-            val args = Bundle(1)
-            args.putString(ARG_BREED_NAME, breedName)
-
-            val fragment = BreedImagesListFragment()
-            fragment.arguments = args
-            return fragment
-        }
+        fun create(breedName: String): BreedImagesListFragment =
+                BreedImagesListFragment().withArgs(bundleOf(ARG_BREED_NAME to breedName))
 
     }
 
